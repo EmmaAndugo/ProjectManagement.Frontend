@@ -4,7 +4,6 @@ export interface User {
   id: string
   email: string
   username: string
-  passwordHash?: string
   fullName: string
   avatarUrl?: string | null
   isActive: boolean
@@ -16,7 +15,7 @@ export interface User {
 export interface CreateUserRequest {
   email: string
   username: string
-  passwordHash: string
+  password: string
   fullName: string
   avatarUrl?: string | null
   isActive: boolean
@@ -75,4 +74,21 @@ export const deleteUser = async (
   id: string
 ): Promise<void> => {
   await axiosClient.delete(`/api/Users/${id}`)
+}
+
+export interface AssignableUser {
+  id: string
+  username: string
+  fullName: string
+  email: string
+  avatarUrl?: string | null
+  isActive: boolean
+}
+
+export const getAssignableUsers = async (): Promise<AssignableUser[]> => {
+  const response = await axiosClient.get<AssignableUser[]>(
+    '/api/Users/assignable'
+  )
+
+  return response.data
 }

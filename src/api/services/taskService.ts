@@ -28,7 +28,6 @@ export interface CreateTaskRequest {
   status?: string
   description?: string
   assigneeId?: string
-  createdBy: string
   startDate?: string
   dueDate?: string
   estimatedHours?: number
@@ -51,10 +50,9 @@ export interface UpdateTaskRequest {
   projectId: string
   parentTaskId?: string
   title: string
-    status?: string
+  status?: string
   description?: string
   assigneeId?: string
-  createdBy: string
   startDate?: string
   dueDate?: string
   estimatedHours?: number

@@ -244,7 +244,7 @@ setCommentCounts(counts)
         return
       }
 
-      const currentUser = JSON.parse(storedUser)
+      
 
       const createdTask = await createTask({
         projectId: project.id,
@@ -258,7 +258,7 @@ setCommentCounts(counts)
             : undefined,
         description: newTaskDescription.trim() || undefined,
         assigneeId: newTaskAssigneeId || undefined,
-        createdBy: currentUser.id,
+        
       })
 
       setTasks((currentTasks) => [
@@ -284,7 +284,7 @@ setCommentCounts(counts)
         status: newStatus,
         description: task.description,
         assigneeId: task.assigneeId,
-        createdBy: task.createdBy,
+        
         startDate: task.startDate,
         dueDate: task.dueDate,
         estimatedHours: task.estimatedHours,

@@ -60,13 +60,13 @@ function Users() {
   const [deleting, setDeleting] = useState(false)
 
   const [newUser, setNewUser] = useState({
-    email: '',
-    username: '',
-    passwordHash: '',
-    fullName: '',
-    avatarUrl: '',
-    isActive: true,
-  })
+  email: '',
+  username: '',
+  password: '',
+  fullName: '',
+  avatarUrl: '',
+  isActive: true,
+})
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -87,10 +87,10 @@ function Users() {
   const handleCreateUser = async () => {
     setCreateValidationError('')
 
-    if (!newUser.fullName.trim()) {
-      setCreateValidationError('Full Name is required.')
-      return
-    }
+    if (!newUser.password.trim()) {
+  setCreateValidationError('Password is required.')
+  return
+}
 
     if (!newUser.username.trim()) {
       setCreateValidationError('Username is required.')
@@ -109,7 +109,7 @@ function Users() {
       return
     }
 
-    if (!newUser.passwordHash.trim()) {
+    if (!newUser.password.trim()) {
       setCreateValidationError('Password is required.')
       return
     }
@@ -119,24 +119,24 @@ function Users() {
 
     try {
       await createUser({
-        email: newUser.email,
-        username: newUser.username,
-        passwordHash: newUser.passwordHash,
-        fullName: newUser.fullName,
-        avatarUrl: newUser.avatarUrl || null,
-        isActive: newUser.isActive,
-      })
+  email: newUser.email,
+  username: newUser.username,
+  password: newUser.password,
+  fullName: newUser.fullName,
+  avatarUrl: newUser.avatarUrl || null,
+  isActive: newUser.isActive,
+})
 
       setOpenCreateDialog(false)
 
       setNewUser({
-        email: '',
-        username: '',
-        passwordHash: '',
-        fullName: '',
-        avatarUrl: '',
-        isActive: true,
-      })
+  email: '',
+  username: '',
+  password: '',
+  fullName: '',
+  avatarUrl: '',
+  isActive: true,
+})
 
       const updatedUsers = await getUsers()
       setUsers(updatedUsers)
@@ -1053,19 +1053,19 @@ function Users() {
             />
 
             <TextField
-              label="Password Hash"
-              type="password"
-              fullWidth
-              margin="normal"
-              value={newUser.passwordHash}
-              onChange={(event) =>
-                setNewUser({
-                  ...newUser,
-                  passwordHash: event.target.value,
-                })
-              }
-              sx={inputSx}
-            />
+  label="Password"
+  type="password"
+  fullWidth
+  margin="normal"
+  value={newUser.password}
+  onChange={(event) =>
+    setNewUser({
+      ...newUser,
+      password: event.target.value,
+    })
+  }
+  sx={inputSx}
+/>
 
             <TextField
               label="Avatar URL"

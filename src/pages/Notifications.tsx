@@ -16,9 +16,19 @@ import {
   useTheme,
 } from '@mui/material'
 import {
+  AssignmentOutlined,
+  AttachFileOutlined,
   CheckCircleOutline,
+  CommentOutlined,
   DeleteOutline,
+  EditOutlined,
+  FolderOutlined,
+  GroupAddOutlined,
+  ManageAccountsOutlined,
   NotificationsNone,
+  PersonAddOutlined,
+  PersonRemoveOutlined,
+  TaskAltOutlined,
 } from '@mui/icons-material'
 
 import {
@@ -180,38 +190,114 @@ usePageView('Notifications')
     })
   }
 
-  const getNotificationTitle = (
-    notification: Notification
-  ) => {
-    switch (notification.type.toUpperCase()) {
-      case 'TASK_ASSIGNED':
-        return 'New task assigned'
+  const getNotificationIcon = (
+  notification: Notification
+) => {
+  switch (notification.type.toUpperCase()) {
+    case 'TASK_ASSIGNED':
+      return <AssignmentOutlined />
 
-      case 'TASK_UPDATED':
-        return 'Task updated'
+    case 'TASK_UPDATED':
+      return <TaskAltOutlined />
 
-      case 'TASK_COMPLETED':
-        return 'Task completed'
+    case 'TASK_COMPLETED':
+      return <CheckCircleOutline />
 
-      case 'PROJECT_UPDATED':
-        return 'Project updated'
+    case 'PROJECT_ASSIGNED_TO_TEAM':
+      return <FolderOutlined />
 
-      case 'PROJECT_CREATED':
-        return 'New project created'
+    case 'PROJECT_MEMBER_ADDED':
+      return <PersonAddOutlined />
 
-      case 'TEAM_UPDATED':
-        return 'Team updated'
+    case 'PROJECT_UPDATED':
+    case 'PROJECT_CREATED':
+      return <EditOutlined />
 
-      case 'COMMENT_ADDED':
-        return 'New comment'
+    case 'TASK_COMMENT':
+    case 'COMMENT_ADDED':
+    case 'COMMENT_REPLY':
+      return <CommentOutlined />
 
-      default:
-        return notification.type
-          .replace(/_/g, ' ')
-          .toLowerCase()
-          .replace(/\b\w/g, (char) => char.toUpperCase())
-    }
+    case 'TASK_ATTACHMENT':
+    case 'COMMENT_ATTACHMENT':
+      return <AttachFileOutlined />
+
+    case 'TEAM_MEMBER_ADDED':
+      return <GroupAddOutlined />
+
+    case 'TEAM_MEMBER_REMOVED':
+      return <PersonRemoveOutlined />
+
+    case 'TEAM_ROLE_CHANGED':
+      return <ManageAccountsOutlined />
+
+    case 'TEAM_UPDATED':
+      return <GroupAddOutlined />
+
+    default:
+      return <NotificationsNone />
   }
+}
+
+  const getNotificationTitle = (
+  notification: Notification
+) => {
+  switch (notification.type.toUpperCase()) {
+    case 'TASK_ASSIGNED':
+      return 'New task assigned'
+
+    case 'TASK_UPDATED':
+      return 'Task updated'
+
+    case 'TASK_COMPLETED':
+      return 'Task completed'
+
+    case 'PROJECT_ASSIGNED_TO_TEAM':
+      return 'Project assigned to your team'
+
+    case 'PROJECT_MEMBER_ADDED':
+      return 'You were added to a project'
+
+    case 'PROJECT_UPDATED':
+      return 'Project updated'
+
+    case 'PROJECT_CREATED':
+      return 'New project created'
+
+    case 'TEAM_UPDATED':
+      return 'Team updated'
+
+    case 'TEAM_MEMBER_ADDED':
+      return 'New team member'
+
+    case 'TEAM_MEMBER_REMOVED':
+      return 'Team member removed'
+
+    case 'TEAM_ROLE_CHANGED':
+      return 'Team role changed'
+
+    case 'TASK_COMMENT':
+      return 'New task comment'
+
+    case 'COMMENT_ADDED':
+      return 'New comment'
+
+    case 'COMMENT_REPLY':
+      return 'New comment reply'
+
+    case 'TASK_ATTACHMENT':
+      return 'New task attachment'
+
+    case 'COMMENT_ATTACHMENT':
+      return 'New comment attachment'
+
+    default:
+      return notification.type
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+  }
+}
 
   const getTaskAssignmentDetails = (
     notification: Notification
@@ -242,70 +328,338 @@ usePageView('Notifications')
   }
 
   const getNotificationMessage = (
-    notification: Notification
-  ) => {
-    const taskDetails = getTaskAssignmentDetails(notification)
+  notification: Notification
+) => {
+  const taskDetails = getTaskAssignmentDetails(notification)
 
-    if (taskDetails) {
-      return (
-        <Box
+  if (taskDetails) {
+    return (
+      <Box
+        sx={{
+          mt: 0.8,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0.35,
+        }}
+      >
+        <Typography
+          component="div"
           sx={{
-            mt: 0.8,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 0.35,
+            color: isDark ? '#f3f4f6' : '#172033',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            lineHeight: 1.5,
           }}
         >
-          <Typography
-            component="div"
-            sx={{
-              color: isDark ? '#f3f4f6' : '#172033',
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              lineHeight: 1.5,
-            }}
-          >
-            {taskDetails.taskTitle}
-          </Typography>
+          {taskDetails.taskTitle}
+        </Typography>
 
-          <Typography
-            component="div"
-            sx={{
-              color: isDark ? '#aab4c3' : '#7a8494',
-              fontSize: '0.82rem',
-              lineHeight: 1.5,
-            }}
-          >
-            {taskDetails.projectTitle}
-          </Typography>
-        </Box>
-      )
-    }
-
-    if (notification.data) {
-      try {
-        const parsedData = JSON.parse(notification.data)
-
-        if (typeof parsedData === 'string') {
-          return parsedData
-        }
-
-        if (parsedData.message) {
-          return parsedData.message
-        }
-
-        if (parsedData.description) {
-          return parsedData.description
-        }
-
-        return JSON.stringify(parsedData)
-      } catch {
-        return notification.data
-      }
-    }
-
-    return 'You have a new notification.'
+        <Typography
+          component="div"
+          sx={{
+            color: isDark ? '#aab4c3' : '#7a8494',
+            fontSize: '0.82rem',
+            lineHeight: 1.5,
+          }}
+        >
+          {taskDetails.projectTitle}
+        </Typography>
+      </Box>
+    )
   }
+
+  let parsedData: any = null
+
+  if (notification.data) {
+    try {
+      parsedData = JSON.parse(notification.data)
+    } catch {
+      parsedData = null
+    }
+  }
+
+  const projectName =
+    parsedData?.projectName || 'the project'
+
+  const teamName =
+    parsedData?.teamName || 'your team'
+
+  const taskTitle =
+    parsedData?.taskTitle || 'the task'
+
+  switch (notification.type.toUpperCase()) {
+    case 'PROJECT_ASSIGNED_TO_TEAM':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {projectName}
+          </Box>{' '}
+          was assigned to{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {teamName}
+          </Box>
+          .
+        </Typography>
+      )
+
+    case 'PROJECT_MEMBER_ADDED':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          You were added to{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {projectName}
+          </Box>
+          .
+        </Typography>
+      )
+
+    case 'PROJECT_UPDATED':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {projectName}
+          </Box>{' '}
+          has been updated.
+        </Typography>
+      )
+
+    case 'TASK_UPDATED':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {taskTitle}
+          </Box>{' '}
+          has been updated.
+        </Typography>
+      )
+
+    case 'TASK_COMPLETED':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {taskTitle}
+          </Box>{' '}
+          has been completed.
+        </Typography>
+      )
+
+    case 'TASK_COMMENT':
+    case 'COMMENT_ADDED':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          A new comment was added to{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {taskTitle}
+          </Box>
+          .
+        </Typography>
+      )
+
+    case 'COMMENT_REPLY':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          Someone replied to your comment on{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {taskTitle}
+          </Box>
+          .
+        </Typography>
+      )
+
+    case 'TASK_ATTACHMENT':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          A new attachment was added to{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {taskTitle}
+          </Box>
+          .
+        </Typography>
+      )
+
+    case 'COMMENT_ATTACHMENT':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          A new attachment was added to a comment on{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {taskTitle}
+          </Box>
+          .
+        </Typography>
+      )
+
+    case 'TEAM_MEMBER_ADDED':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          A new member was added to{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {teamName}
+          </Box>
+          .
+        </Typography>
+      )
+
+    case 'TEAM_MEMBER_REMOVED':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          A member was removed from{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {teamName}
+          </Box>
+          .
+        </Typography>
+      )
+
+    case 'TEAM_ROLE_CHANGED':
+      return (
+        <Typography
+          sx={{
+            mt: 0.8,
+            color: bodyText,
+            fontSize: '0.88rem',
+            lineHeight: 1.5,
+          }}
+        >
+          A team member's role was changed in{' '}
+          <Box
+            component="span"
+            sx={{ fontWeight: 700 }}
+          >
+            {teamName}
+          </Box>
+          .
+        </Typography>
+      )
+
+    default:
+      if (parsedData?.message) {
+        return parsedData.message
+      }
+
+      if (parsedData?.description) {
+        return parsedData.description
+      }
+
+      if (typeof parsedData === 'string') {
+        return parsedData
+      }
+
+      return 'You have a new notification.'
+  }
+}
 
   const unreadCount = notifications.filter(
     (notification) => !isRead(notification)
@@ -421,14 +775,18 @@ usePageView('Notifications')
 
           {unreadCount > 0 && (
             <Chip
-              label={`${unreadCount} unread`}
-              sx={{
-                borderRadius: 2,
-                fontWeight: 700,
-                color: unreadChipText,
-                backgroundColor: unreadChipBackground,
-              }}
-            />
+  label={`${unreadCount} unread`}
+  size="small"
+  sx={{
+    height: 30,
+    px: 0.5,
+    borderRadius: 2,
+    fontWeight: 700,
+    fontSize: '0.76rem',
+    color: unreadChipText,
+    backgroundColor: unreadChipBackground,
+  }}
+/>
           )}
         </Box>
 
@@ -570,29 +928,30 @@ usePageView('Notifications')
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: {
-                      xs: 1.5,
-                      sm: 2,
-                    },
-                    px: {
-                      xs: 2,
-                      sm: 3,
-                    },
-                    py: {
-                      xs: 2,
-                      sm: 2.5,
-                    },
+  xs: 1.5,
+  sm: 2.5,
+},
+px: {
+  xs: 2,
+  sm: 3,
+},
+py: {
+  xs: 2.25,
+  sm: 2.75,
+},
                     backgroundColor:
                       notificationIsRead
                         ? notificationReadBackground
                         : notificationUnreadBackground,
                     transition:
-                      'background-color 0.2s ease',
+  'background-color 0.2s ease, transform 0.2s ease',
                     '&:hover': {
-                      backgroundColor:
-                        notificationIsRead
-                          ? notificationReadHover
-                          : notificationUnreadHover,
-                    },
+  backgroundColor:
+    notificationIsRead
+      ? notificationReadHover
+      : notificationUnreadHover,
+  transform: 'translateY(-1px)',
+},
                     '&::before': !notificationIsRead
                       ? {
                           content: '""',
@@ -600,7 +959,7 @@ usePageView('Notifications')
                           left: 0,
                           top: 0,
                           bottom: 0,
-                          width: 4,
+                          width: 3,
                           background:
                             'linear-gradient(180deg, #3f51ff, #7c4dff)',
                         }
@@ -629,23 +988,26 @@ usePageView('Notifications')
                           : iconUnreadBackground,
                     }}
                   >
-                    {notificationIsRead ? (
-                      <CheckCircleOutline
-                        sx={{
-                          fontSize: 22,
-                          color: isDark
-                            ? '#8f9bad'
-                            : '#8a94a6',
-                        }}
-                      />
-                    ) : (
-                      <NotificationsNone
-                        sx={{
-                          fontSize: 22,
-                          color: '#3f51ff',
-                        }}
-                      />
-                    )}
+                    <Box
+  sx={{
+    color: notificationIsRead
+      ? isDark
+        ? '#8f9bad'
+        : '#8a94a6'
+      : '#3f51ff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '& svg': {
+  fontSize: {
+    xs: 20,
+    sm: 22,
+  },
+},
+  }}
+>
+  {getNotificationIcon(notification)}
+</Box>
                   </Box>
 
                   {/* Content */}
@@ -674,14 +1036,14 @@ usePageView('Notifications')
                             ? bodyText
                             : primaryText,
                           fontSize: {
-                            xs: '0.92rem',
-                            sm: '0.95rem',
-                          },
+  xs: '0.94rem',
+  sm: '0.98rem',
+},
                           fontWeight:
                             notificationIsRead
                               ? 500
                               : 700,
-                          lineHeight: 1.5,
+                          lineHeight: 1.4,
                         }}
                       >
                         {getNotificationTitle(
@@ -713,9 +1075,9 @@ usePageView('Notifications')
                     {/* Created date */}
                     <Typography
                       sx={{
-                        mt: 0.8,
+                        mt: 1,
                         color: mutedText,
-                        fontSize: '0.76rem',
+                        fontSize: '0.78rem',
                       }}
                     >
                       {formatDate(
@@ -730,9 +1092,9 @@ usePageView('Notifications')
                           sx={{
                             mt: 0.3,
                             color: isDark
-                              ? '#7d8797'
-                              : '#a0a8b5',
-                            fontSize: '0.73rem',
+  ? '#8f9bad'
+  : '#929baa',
+fontSize: '0.75rem',
                           }}
                         >
                           Read{' '}
@@ -748,7 +1110,7 @@ usePageView('Notifications')
                         display: 'flex',
                         alignItems: 'center',
                         gap: 1,
-                        mt: 1.3,
+                        mt: 1.6,
                         flexWrap: 'wrap',
                       }}
                     >
@@ -770,9 +1132,9 @@ usePageView('Notifications')
                           }
                           sx={{
                             minWidth: 'auto',
-                            px: 1,
-                            py: 0.5,
-                            borderRadius: 1.5,
+                           px: 1.25,
+py: 0.6,
+borderRadius: 2,
                             textTransform: 'none',
                             fontSize: '0.78rem',
                             fontWeight: 700,
@@ -803,9 +1165,9 @@ usePageView('Notifications')
                         }
                         sx={{
                           minWidth: 'auto',
-                          px: 1,
-                          py: 0.5,
-                          borderRadius: 1.5,
+                          px: 1.25,
+py: 0.6,
+borderRadius: 2,
                           textTransform: 'none',
                           fontSize: '0.78rem',
                           fontWeight: 600,
@@ -830,9 +1192,9 @@ usePageView('Notifications')
                       sx={{
                         position: 'absolute',
                         left: {
-                          xs: 58,
-                          sm: 72,
-                        },
+  xs: 60,
+  sm: 76,
+},
                         right: 0,
                         bottom: 0,
                         height: '1px',

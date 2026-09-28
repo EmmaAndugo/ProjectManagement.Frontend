@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   AppBar,
   Box,
@@ -34,10 +34,53 @@ import {
   useLocation,
 } from 'react-router-dom'
 
+
+
+console.log('NAVBAR FILE LOADED')
+
+import { getNotifications } from '../api/services/notificationService'
+
 function Navbar() {
+
+  console.log('NAVBAR IS RUNNING')
+
   const location = useLocation()
 
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const [hasUnreadNotifications, setHasUnreadNotifications] =
+  useState(false)
+
+  useEffect(() => {
+  const loadUnreadNotifications = async () => {
+    try {
+      const notifications = await getNotifications()
+
+     const hasUnread = notifications.some(
+  (notification) => !notification.readAt
+)
+
+console.log('Navbar notifications:', notifications)
+console.log('Has unread notifications:', hasUnread)
+
+setHasUnreadNotifications(hasUnread)
+    } catch (error) {
+      console.error(
+        'Failed to check unread notifications:',
+        error
+      )
+    }
+  }
+
+   loadUnreadNotifications()
+
+  const interval = setInterval(
+    loadUnreadNotifications,
+    10000
+  )
+
+  return () => clearInterval(interval)
+}, [])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -180,7 +223,36 @@ function Navbar() {
                 color="inherit"
                 component={Link}
                 to={item.path}
-                startIcon={item.icon}
+                startIcon={
+  item.path === '/notifications' ? (
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'flex',
+      }}
+    >
+      {item.icon}
+
+      {true && (
+        <Box
+  sx={{
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    width: 10,
+    height: 10,
+    borderRadius: '50%',
+    backgroundColor: '#ff0000',
+    border: '2px solid white',
+    zIndex: 10,
+  }}
+/>
+      )}
+    </Box>
+  ) : (
+    item.icon
+  )
+}
                 sx={{
                   position: 'relative',
                   flexShrink: 0,
@@ -228,7 +300,9 @@ function Navbar() {
                     'background-color 0.2s ease, transform 0.2s ease',
                 }}
               >
-                {item.label}
+               {item.path === '/notifications'
+  ? 'TEST NOTIFICATIONS'
+  : item.label}
               </Button>
             ))}
 
@@ -386,8 +460,34 @@ function Navbar() {
               }}
             >
               <ListItemIcon>
-                {item.icon}
-              </ListItemIcon>
+  {item.path === '/notifications' ? (
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'flex',
+      }}
+    >
+      {item.icon}
+
+      {hasUnreadNotifications && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -2,
+            right: -3,
+            width: 7,
+            height: 7,
+            borderRadius: '50%',
+            backgroundColor: '#ff5252',
+            border: '2px solid #173f6b',
+          }}
+        />
+      )}
+    </Box>
+  ) : (
+    item.icon
+  )}
+</ListItemIcon>
 
               <ListItemText
                 primary={item.label}

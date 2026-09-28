@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import axiosClient from '../api/axiosClient'
 
+import { getNotifications } from '../api/services/notificationService'
 
 import {
   AppBar,
@@ -53,6 +54,35 @@ function AppLayout() {
 
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  const [hasUnreadNotifications, setHasUnreadNotifications] =
+  useState(false)
+  useEffect(() => {
+  const loadUnreadNotifications = async () => {
+    try {
+      const notifications = await getNotifications()
+
+      const hasUnread = notifications.some(
+        (notification) => !notification.readAt
+      )
+
+      setHasUnreadNotifications(hasUnread)
+    } catch (error) {
+      console.error(
+        'Failed to check unread notifications:',
+        error
+      )
+    }
+  }
+
+  loadUnreadNotifications()
+
+  const interval = setInterval(
+    loadUnreadNotifications,
+    10000
+  )
+
+  return () => clearInterval(interval)
+}, [])
  const token = localStorage.getItem('token')
 let isAdmin = false
 
@@ -85,10 +115,14 @@ const mainNavItems = [
   { label: 'Teams', path: '/teams', icon: <Groups /> },
   { label: 'Notifications', path: '/notifications', icon: <Notifications /> },
   { label: 'Resources', path: '/resources', icon: <AttachFile /> },
-  { label: 'Users', path: '/users', icon: <People /> },
 
   ...(isAdmin
     ? [
+        {
+          label: 'Users',
+          path: '/users',
+          icon: <People />,
+        },
         {
           label: 'System Logs',
           path: '/system-logs',
@@ -187,15 +221,42 @@ const mainNavItems = [
           }}
         >
           <ListItemIcon
-            sx={{
-              minWidth: 42,
-              color: isActive
-                ? '#ffffff'
-                : 'rgba(255,255,255,0.68)',
-            }}
-          >
-            {item.icon}
-          </ListItemIcon>
+  sx={{
+    minWidth: 42,
+    color: isActive
+      ? '#ffffff'
+      : 'rgba(255,255,255,0.68)',
+  }}
+>
+  {item.path === '/notifications' ? (
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'flex',
+      }}
+    >
+      {item.icon}
+
+      {hasUnreadNotifications && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -3,
+            right: -4,
+            width: 9,
+            height: 9,
+            borderRadius: '50%',
+            backgroundColor: '#ff5252',
+            border: '2px solid #0b1f47',
+            zIndex: 10,
+          }}
+        />
+      )}
+    </Box>
+  ) : (
+    item.icon
+  )}
+</ListItemIcon>
 
           <ListItemText
             primary={item.label}

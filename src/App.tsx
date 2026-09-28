@@ -197,10 +197,14 @@ function App() {
               element={<Notifications />}
             />
 
-            <Route
-              path="/users"
-              element={<Users />}
-            />
+           <Route
+  path="/users"
+  element={
+    <ProtectedRoute allowedRoles={['Admin']}>
+      <Users />
+    </ProtectedRoute>
+  }
+/>
 
             <Route
   path="/resources"
@@ -208,7 +212,11 @@ function App() {
 />
 <Route
   path="/system-logs"
-  element={<SystemLogs />}
+  element={
+    <ProtectedRoute allowedRoles={['Admin']}>
+      <SystemLogs />
+    </ProtectedRoute>
+  }
 />
 
             <Route

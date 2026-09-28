@@ -49,11 +49,8 @@ import {
 
 import type { Project } from '../api/services/projectService'
 
-import {
-  getUsers,
-} from '../api/services/userService'
-
-import type { User } from '../api/services/userService'
+import { getAssignableUsers } from '../api/services/userService'
+import type { AssignableUser } from '../api/services/userService'
 
 import {
   analyzeTask,
@@ -313,7 +310,7 @@ function Tasks() {
 
   const [tasks, setTasks] = useState<Task[]>([])
   const [projects, setProjects] = useState<Project[]>([])
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<AssignableUser[]>([])
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -330,7 +327,7 @@ function Tasks() {
   const [taskDescription, setTaskDescription] = useState('')
   const [taskProjectId, setTaskProjectId] = useState('')
   const [taskStatus, setTaskStatus] = useState('TODO')
-  const [taskCreatedBy, setTaskCreatedBy] = useState('')
+  
   const [taskAssigneeId, setTaskAssigneeId] = useState('')
   const [taskStartDate, setTaskStartDate] = useState('')
   const [taskDueDate, setTaskDueDate] = useState('')
@@ -347,7 +344,7 @@ function Tasks() {
   const [editTaskDescription, setEditTaskDescription] = useState('')
   const [editTaskProjectId, setEditTaskProjectId] = useState('')
   const [editTaskStatus, setEditTaskStatus] = useState('TODO')
-  const [editTaskCreatedBy, setEditTaskCreatedBy] = useState('')
+  
   const [editTaskAssigneeId, setEditTaskAssigneeId] = useState('')
   const [editTaskStartDate, setEditTaskStartDate] = useState('')
   const [editTaskDueDate, setEditTaskDueDate] = useState('')
@@ -378,7 +375,7 @@ function Tasks() {
       ] = await Promise.all([
         getTasks(),
         getProjects(),
-        getUsers(),
+        getAssignableUsers(),
       ])
 
       setTasks(tasksData)
@@ -461,7 +458,7 @@ function Tasks() {
     setTaskDescription('')
     setTaskProjectId('')
     setTaskStatus('TODO')
-    setTaskCreatedBy('')
+    
     setTaskAssigneeId('')
     setTaskStartDate('')
     setTaskDueDate('')
@@ -499,10 +496,7 @@ function Tasks() {
       return
     }
 
-    if (!taskCreatedBy) {
-      setCreateError('Created By user is required.')
-      return
-    }
+  
 
     try {
       setCreating(true)
@@ -513,7 +507,7 @@ function Tasks() {
         status: taskStatus,
         description: taskDescription.trim() || undefined,
         assigneeId: taskAssigneeId || undefined,
-        createdBy: taskCreatedBy,
+        
         startDate: taskStartDate || undefined,
         dueDate: taskDueDate || undefined,
         estimatedHours: taskEstimatedHours
@@ -549,7 +543,7 @@ function Tasks() {
     setEditTaskDescription(task.description ?? '')
     setEditTaskProjectId(task.projectId)
     setEditTaskStatus(task.status || 'TODO')
-    setEditTaskCreatedBy(task.createdBy)
+    
     setEditTaskAssigneeId(task.assigneeId ?? '')
     setEditTaskStartDate(
       task.startDate
@@ -601,10 +595,7 @@ function Tasks() {
       return
     }
 
-    if (!editTaskCreatedBy) {
-      setEditError('Created By user is required.')
-      return
-    }
+    
 
     try {
       setUpdating(true)
@@ -617,7 +608,7 @@ function Tasks() {
           editTaskDescription.trim() || undefined,
         assigneeId:
           editTaskAssigneeId || undefined,
-        createdBy: editTaskCreatedBy,
+        
         startDate:
           editTaskStartDate || undefined,
         dueDate:
@@ -1828,41 +1819,7 @@ function Tasks() {
 
 
             <Grid item xs={12} sm={6}>
-              <FormControl
-                fullWidth
-                margin="normal"
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: secondaryText,
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: isDark
-                      ? '#90caf9'
-                      : '#3f51ff',
-                  },
-                }}
-              >
-                <InputLabel>Created By</InputLabel>
-
-                <Select
-                  value={taskCreatedBy}
-                  label="Created By"
-                  onChange={(event) =>
-                    setTaskCreatedBy(event.target.value)
-                  }
-                  sx={selectSx}
-                >
-                  {activeUsers.map((user) => (
-                    <MenuItem
-                      key={user.id}
-                      value={user.id}
-                    >
-                      {user.fullName ||
-                        user.username}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              
             </Grid>
 
 
@@ -2163,43 +2120,7 @@ function Tasks() {
 
 
             <Grid item xs={12} sm={6}>
-              <FormControl
-                fullWidth
-                margin="normal"
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: secondaryText,
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: isDark
-                      ? '#90caf9'
-                      : '#3f51ff',
-                  },
-                }}
-              >
-                <InputLabel>Created By</InputLabel>
-
-                <Select
-                  value={editTaskCreatedBy}
-                  label="Created By"
-                  onChange={(event) =>
-                    setEditTaskCreatedBy(
-                      event.target.value
-                    )
-                  }
-                  sx={selectSx}
-                >
-                  {activeUsers.map((user) => (
-                    <MenuItem
-                      key={user.id}
-                      value={user.id}
-                    >
-                      {user.fullName ||
-                        user.username}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              
             </Grid>
 
 
